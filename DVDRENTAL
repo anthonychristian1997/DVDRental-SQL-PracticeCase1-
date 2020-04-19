@@ -1,0 +1,108 @@
+#Data diambil dari dataset dvdrental latihan sql saat sesi webclass# 
+
+
+
+#1. A Customers want to know the films about "astronaut". How many recommendations could you give for him?#
+#Category_id 1 diasumsikan film astronaut#
+
+select count(a.film_id) from film_category a 
+join film b
+on a.film_id = b.film_id 
+join category c
+on a.category_id = c.category_id 
+where c.category_id = 1;
+
+#Total 64 Film#
+
+#2. I wonder, how many films have a rating of "R" and a replacement cost between $5-$15?#
+
+select count(film_id ) from film 
+where rating='R' and replacement_cost > 5 and replacement_cost < 15;
+
+#Total 52 Film#
+
+#3. We have two staff members with staff ID1 and ID2. We want to give a bonus to the staff member that handled the most payments,
+How many payments did each staff member handle? and how much was the total amount processed by each staff member? 
+
+#Staff ID 1#
+select count(r.staff_id) from rental r
+join staff s 
+on s.staff_id=r.staff_id
+where r.staff_id = 1;
+#Total 8040#
+
+select sum(amount) from payment
+where staff_id = 1;
+#Total payment 30.252,12#
+
+#Staff ID 2#
+select count(r.staff_id) from rental r
+join staff s 
+on s.staff_id=r.staff_id
+where r.staff_id = 1;
+#Total 8004#
+
+select sum(amount) from payment
+where staff_id = 2;
+#Total payment 31.059,92#
+
+#The staff ID1 deserve the bonus based on total payment and total handle"
+
+#4. Corporate headquaters is auditing the store, they want to know the average replacement cost of movie by rating#
+
+select rating,avg(replacement_cost ) from film
+group by rating order by rating;
+
+#Avg Replacement cost/Rating
+G	       =20.1248314606741573
+PG	     =18.9590721649484536
+PG-13	   =20.4025560538116592
+R	       =20.2310256410256410
+NC-17	   =20.1376190476190476#
+
+#5. We want to send coupons to the 5 customers who have spent the most amount of money. Get their customer name, email and their spent amount#
+
+select c.first_name, c.last_name, c.email , sum(p.amount) as spent_amount from customer c 
+join payment p 
+on c.customer_id = p.customer_id 
+group by c.first_name,c.last_name,c.email order by spent_amount desc limit 5;
+
+#Top Spending
+1. Eleanor hunt
+2. Karl Seal
+3. Marion Snyder
+4. Rhonda Kennedy
+5. Clara Shaw#
+
+#6. We want to audit our stock of films in all of our stores. How many copies of each store do we have?#
+
+#Store 1#
+select count(store_id) from inventory
+where store_id = 1;
+
+#2.270 Film#
+
+#Store 2#
+select count(store_id) from inventory
+where store_id = 2;
+
+#2.311 Film#
+
+#7. We want to know what customers are eligible for our platinum credit card. The requirments are that the customer has at least a total 
+of 40 transaction payments. Get the customers name, email who are eligible for the credit card.#
+
+select c.first_name, c.last_name, count(p.payment_id) as transcation_payments, c.email
+from payment p
+join customer c
+on p.customer_id=c.customer_id
+group by p.customer_id, c.email, c.first_name,c.last_name, c.email 
+having count(p.payment_id) >= 40 order by transcation_payments desc;
+
+#Customer Have Total payment > 40
+Eleanor	Hunt	  45	eleanor.hunt@sakilacustomer.org
+Karl	Seal	    42	karl.seal@sakilacustomer.org
+Clara	Shaw	    40	clara.shaw@sakilacustomer.org#
+
+
+
+
